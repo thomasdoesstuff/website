@@ -1,38 +1,67 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Iosevka", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Base: deep navy surfaces */
-  --color-ink: #070b16;
-  --color-panel: #0f1629;
-  --color-edge: #1f2a44;
+  /* Base: plum-tinged dark surfaces */
+  --color-ink: #120d24;
+  --color-panel: #1b1433;
+  --color-edge: #2e2352;
 
   /* Text */
-  --color-fg: #e6eaf5;
-  --color-dim: #8a95b3;
+  --color-fg: #f3efff;
+  --color-dim: #a79fc7;
 
-  /* Accents, borrowed from glass-cockpit display colors */
-  --color-signal-cyan: #38d6f5;
-  --color-signal-amber: #ffb020;
-  --color-signal-magenta: #f25cff;
+  /* Accents */
+  --color-signal-cyan: #5ce1ff;
+  --color-signal-amber: #ffb347;
+  --color-signal-magenta: #ff6bd6;
 }
 
 html {
   color-scheme: dark;
 }
 
-/* Faint grid that fades out below the horizon line */
-.horizon-grid {
-  background-image:
-    linear-gradient(to right, rgb(56 214 245 / 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(56 214 245 / 0.1) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: linear-gradient(to bottom, black, transparent 90%);
+::selection {
+  background: var(--color-signal-magenta);
+  color: var(--color-ink);
+}
+
+/* Gradient text (not used on the landing page, handy elsewhere) */
+.gradient-text {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-signal-cyan),
+    var(--color-signal-magenta) 55%,
+    var(--color-signal-amber)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.gradient-text::selection {
+  -webkit-text-fill-color: var(--color-ink);
+}
+
+/* Slow fade-in for the landing headline */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 1.8s ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+  .fade-in {
+    animation: none;
   }
 }
