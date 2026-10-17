@@ -1,0 +1,69 @@
+---
+import "../styles/global.css";
+import "@fontsource/iosevka/400.css";
+import "@fontsource/iosevka/700.css";
+import "@fontsource/iosevka/800.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Hide the header and footer (used for the minimal landing page). */
+  bare?: boolean;
+}
+
+const {
+  title = "thomas is not a web dev",
+  bare = false,
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const links = [
+  { href: "/", label: "home" },
+  { href: "/work", label: "my work" },
+  { href: "/blog", label: "blog" },
+  { href: "/about", label: "about" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#120d24" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-ink font-sans text-fg antialiased">
+    {
+      !bare && (
+        <header class="max-w-3xl px-6 py-6 sm:px-12 flex items-center justify-between">
+          <a
+            href="/"
+            class="font-bold tracking-tight outline-offset-4 focus-visible:outline-2 focus-visible:outline-signal-cyan"
+          >
+            thomas
+          </a>
+          <nav class="flex gap-6 text-sm">
+            {links.map((link) => (
+              <a
+                href={link.href}
+                aria-current={path.startsWith(link.href) ? "page" : undefined}
+                class:list={[
+                  "underline-offset-8 transition-colors outline-offset-4 focus-visible:outline-2 focus-visible:outline-signal-cyan",
+                  path.startsWith(link.href)
+                    ? "text-fg underline decoration-signal-cyan decoration-2"
+                    : "text-dim hover:text-fg",
+                ]}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </header>
+      )
+    }
+
+    <slot />
+  </body>
+</html>

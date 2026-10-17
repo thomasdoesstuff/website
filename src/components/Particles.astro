@@ -1,0 +1,144 @@
+---
+// Full-screen drifting particle background.
+// Drop <Particles /> anywhere in a page; it sits behind everything else.
+---
+
+<canvas
+  id="particles"
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 -z-10 h-full w-full"></canvas>
+
+<script>
+  const canvas = document.getElementById("particles") as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext("2d");
+
+  if (canvas && ctx) {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    type Particle = {
+      x: number;
+      y: number;
+      depth: number; // 0 = far away, 1 = close
+      r: number;
+      vx: number;
+      vy: number;
+      alpha: number;
+      phase: number;
+      twinkle: number;
+      wobble: number;
+      color: string;
+    };
+
+    // Mostly soft white, with a few tinted by the site's accent colors
+    const palette = [
+      { rgb: "243, 239, 255", weight: 0.7 },
+      { rgb: "92, 225, 255", weight: 0.15 },
+      { rgb: "255, 107, 214", weight: 0.1 },
+      { rgb: "255, 179, 71", weight: 0.05 },
+    ];
+    const pickColor = () => {
+      let n = Math.random();
+      for (const c of palette) {
+        n -= c.weight;
+        if (n <= 0) return c.rgb;
+      }
+      return palette[0].rgb;
+    };
+
+    let width = 0;
+    let height = 0;
+    let particles: Particle[] = [];
+
+    const init = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Density scales with screen area, capped so big monitors stay light
+      const count = Math.min(Math.round((width * height) / 9000), 240);
+      particles = Array.from({ length: count }, () => {
+        const depth = Math.random();
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 3 + depth * 12; // px per second; closer = faster
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          depth,
+          r: 0.5 + depth * 1.5,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 0.2 + depth * 0.6,
+          phase: Math.random() * Math.PI * 2,
+          twinkle: 0.4 + Math.random() * 0.8,
+          wobble: 1 + Math.random() * 3,
+          color: pickColor(),
+        };
+      });
+    };
+
+    const step = (dt: number, t: number) => {
+      const margin = 10;
+      for (const p of particles) {
+        // Gentle sinusoidal sway on top of the steady drift
+        p.x += (p.vx + Math.sin(t * 0.4 + p.phase) * p.wobble) * dt;
+        p.y += (p.vy + Math.cos(t * 0.35 + p.phase) * p.wobble) * dt;
+
+        // Wrap around the edges
+        if (p.x < -margin) p.x = width + margin;
+        else if (p.x > width + margin) p.x = -margin;
+        if (p.y < -margin) p.y = height + margin;
+        else if (p.y > height + margin) p.y = -margin;
+      }
+    };
+
+    const draw = (t: number) => {
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        const a = p.alpha * (0.65 + 0.35 * Math.sin(t * p.twinkle + p.phase));
+        ctx.fillStyle = `rgba(${p.color}, ${a})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Soft halo on the nearest particles
+        if (p.depth > 0.85) {
+          ctx.fillStyle = `rgba(${p.color}, ${a * 0.15})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    };
+
+    let last = performance.now();
+    const frame = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      step(dt, now / 1000);
+      draw(now / 1000);
+      requestAnimationFrame(frame);
+    };
+
+    init();
+    if (reduceMotion) {
+      draw(0); // one still frame, no animation
+    } else {
+      requestAnimationFrame(frame);
+    }
+
+    // Only rebuild on real size changes, not mobile address-bar wobble
+    window.addEventListener("resize", () => {
+      const widthChanged = Math.abs(window.innerWidth - width) > 1;
+      const heightChanged = Math.abs(window.innerHeight - height) > 150;
+      if (widthChanged || heightChanged) {
+        init();
+        if (reduceMotion) draw(0);
+      }
+    });
+  }
+</script>
