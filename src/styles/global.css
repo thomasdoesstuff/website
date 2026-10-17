@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Base: deep navy surfaces */
+  --color-ink: #070b16;
+  --color-panel: #0f1629;
+  --color-edge: #1f2a44;
+
+  /* Text */
+  --color-fg: #e6eaf5;
+  --color-dim: #8a95b3;
+
+  /* Accents, borrowed from glass-cockpit display colors */
+  --color-signal-cyan: #38d6f5;
+  --color-signal-amber: #ffb020;
+  --color-signal-magenta: #f25cff;
+}
+
+html {
+  color-scheme: dark;
+}
+
+/* Faint grid that fades out below the horizon line */
+.horizon-grid {
+  background-image:
+    linear-gradient(to right, rgb(56 214 245 / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(56 214 245 / 0.1) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

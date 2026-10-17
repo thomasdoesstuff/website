@@ -1,16 +1,72 @@
 ---
+import Layout from "../layouts/layout.astro";
+
+const destinations = [
+  {
+    href: "/blog",
+    title: "Code Blog",
+    blurb: "A blog where I write about code I've written and interesting programming techniques.",
+    bar: "bg-signal-cyan",
+  },
+  {
+    href: "/about",
+    title: "About",
+    blurb: "Who I am, what I do, and maybe even why I do it.",
+    bar: "bg-signal-amber",
+  },
+  {
+    href: "mailto:thomasmcp@pm.me",
+    title: "Email me",
+    blurb: "No spam, please.",
+    bar: "bg-signal-magenta",
+  },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <section class="max-w-3xl px-6 pt-20 pb-16">
+    <h1 class="text-5xl font-bold tracking-tight text-balance sm:text-6xl">
+	    Hi, I'm Thomas.
+    </h1>
+    <p class="mt-6 max-w-xl text-lg leading-relaxed text-dim">
+            You've found my website. <br />
+	    Here I ramble about myself and stuff I think is interesting.
+    </p>
+    <a
+      href="/blog"
+      class="mt-10 inline-block rounded-md bg-signal-cyan px-5 py-3 font-semibold text-ink transition-colors hover:bg-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal-cyan"
+    >
+      Code Blog
+    </a>
+  </section>
+
+  <!-- Horizon line with a grid fading out beneath it -->
+  <div aria-hidden="true">
+    <div
+      class="h-px w-full bg-linear-to-r from-signal-cyan via-signal-magenta to-signal-amber shadow-[0_0_30px_4px_rgb(242_92_255/0.35)]"
+    >
+    </div>
+    <div class="horizon-grid h-24"></div>
+  </div>
+
+  <section class="max-w-3xl px-6 pb-24">
+    <ul class="divide-y divide-edge border-y border-edge">
+      {
+        destinations.map((d) => (
+          <li>
+            <a
+              href={d.href}
+              class="-mx-4 flex items-center gap-5 px-4 py-6 transition-colors hover:bg-panel focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-cyan"
+            >
+              <span class={`h-12 w-1 rounded-full ${d.bar}`} aria-hidden="true" />
+              <span>
+                <span class="block text-xl font-semibold">{d.title}</span>
+                <span class="block text-dim">{d.blurb}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>
