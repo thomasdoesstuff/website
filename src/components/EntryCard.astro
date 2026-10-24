@@ -1,0 +1,75 @@
+---
+import { render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  entry: CollectionEntry<"work"> | CollectionEntry<"blog">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const panelId = `entry-${entry.collection}-${entry.id}`.replace(/[^a-zA-Z0-9_-]/g, "-");
+const date = entry.data.date.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+---
+
+<article class="border-b border-edge first:border-t">
+  <h2>
+    <button
+      type="button"
+      data-entry-toggle
+      aria-expanded="false"
+      aria-controls={panelId}
+      class="group flex w-full items-start gap-4 py-6 text-left transition-colors hover:bg-panel/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-cyan"
+    >
+      <span aria-hidden="true" class="mt-1 text-signal-cyan">
+        <span class="group-aria-expanded:hidden">[+]</span>
+        <span class="hidden group-aria-expanded:inline">[-]</span>
+      </span>
+      <span class="min-w-0 flex-1">
+        <span class="block text-xl font-bold text-fg">{entry.data.title}</span>
+        <span class="mt-1 block text-sm text-dim">{date}</span>
+        <span class="mt-3 block text-dim">{entry.data.summary}</span>
+      </span>
+    </button>
+  </h2>
+
+  <!-- Collapsed by default; grid rows animate 0fr -> 1fr so height transitions smoothly -->
+  <div
+    id={panelId}
+    inert
+    data-open="false"
+    class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out data-[open=true]:grid-rows-[1fr]"
+  >
+    <div class="min-h-0 overflow-hidden">
+      <div
+        class="prose max-w-none pb-8 pl-10 prose-invert prose-headings:text-fg prose-a:text-signal-cyan prose-code:text-signal-amber"
+      >
+        <Content />
+      </div>
+    </div>
+  </div>
+</article>
+
+<script>
+  // One delegated listener on the document: registered once, and it keeps
+  // working for entries on pages that arrive via client-side navigation.
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    const button = target?.closest<HTMLButtonElement>("[data-entry-toggle]");
+    if (!button) return;
+
+    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "");
+    if (!panel) return;
+
+    const open = button.getAttribute("aria-expanded") !== "true";
+    button.setAttribute("aria-expanded", String(open));
+    panel.dataset.open = String(open);
+    panel.toggleAttribute("inert", !open); // keeps hidden content out of tab order
+  });
+</script>

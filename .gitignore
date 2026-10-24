@@ -1,2 +1,5 @@
 # directories
-dist/**
+dist/
+node_modules/
+.astro/
+.wrangler/

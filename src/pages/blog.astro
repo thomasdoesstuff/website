@@ -1,17 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Particles from "../components/Particles.astro";
+import EntryCard from "../components/EntryCard.astro";
+import { getCollection } from "astro:content";
+
+const entries = (await getCollection("blog", (e) => !e.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
 <Layout>
-  <Particles />
-
-  <main class="flex min-h-dvh flex-col items-center justify-center px-6">
+  <main class="fade-in flex min-h-dvh flex-col justify-center px-6">
     <h1
-      class="fade-in tracking-tight text-balance text-fg [text-shadow:0_0_40px_rgb(92_225_255/0.25)]"
+      class="tracking-tight text-balance text-fg [text-shadow:0_0_40px_rgb(92_225_255/0.25)]"
     >
-    Welcome to my blog page. <br />
-    I'll put something here eventually.
+      Welcome to my blog page. <br />
+      I'll put something here eventually. <br />
     </h1>
+    {entries.map((entry) => <EntryCard entry={entry} />)}
   </main>
 </Layout>

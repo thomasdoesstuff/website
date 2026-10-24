@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from "astro:transitions";
+import Particles from "../components/Particles.astro";
 import "../styles/global.css";
 import "@fontsource/iosevka/400.css";
 import "@fontsource/iosevka/700.css";
@@ -7,7 +9,7 @@ import "@fontsource/iosevka/800.css";
 interface Props {
   title?: string;
   description?: string;
-  /** Hide the header and footer (used for the minimal landing page). */
+  /** true == hide header */
   bare?: boolean;
 }
 
@@ -18,7 +20,6 @@ const {
 
 const path = Astro.url.pathname;
 const links = [
-  { href: "/", label: "home" },
   { href: "/work", label: "my work" },
   { href: "/blog", label: "blog" },
   { href: "/about", label: "about" },
@@ -33,16 +34,18 @@ const links = [
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#120d24" />
     <title>{title}</title>
+    <ClientRouter />
   </head>
   <body class="min-h-screen bg-ink font-sans text-fg antialiased">
+    <Particles />
     {
       !bare && (
-        <header class="max-w-3xl px-6 py-6 sm:px-12 flex items-center justify-between">
+        <header class="mx-auto flex max-w-2xl items-center justify-between px-6 py-6">
           <a
             href="/"
             class="font-bold tracking-tight outline-offset-4 focus-visible:outline-2 focus-visible:outline-signal-cyan"
           >
-            thomas
+	    thomas
           </a>
           <nav class="flex gap-6 text-sm">
             {links.map((link) => (
@@ -63,7 +66,6 @@ const links = [
         </header>
       )
     }
-
     <slot />
   </body>
 </html>
