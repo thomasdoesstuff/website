@@ -10,6 +10,8 @@ When my team needed a thread pool, this is some of the actual code I wrote for u
 
 **Threadpool.hpp**
 ```cpp
+#pragma once
+
 #include <condition_variable>
 #include <functional>
 #include <queue>
