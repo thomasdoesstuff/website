@@ -14,7 +14,7 @@ const entries = (await getCollection("blog", (e) => !e.data.draft)).sort(
       class="tracking-tight text-balance text-fg [text-shadow:0_0_40px_rgb(92_225_255/0.25)]"
     >
       Welcome to my blog page. <br />
-      Nothing here yet, thank you for your patience while I'm working on the website. <br />
+      Nothing here yet, but I'll put something here soon. <br />
     </h1>
     {entries.map((entry) => <EntryCard entry={entry} />)}
   </main>
